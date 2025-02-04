@@ -4,5 +4,6 @@ BucketEngine/x64/
 .vs/
 x64/
 ./BucketEngine.sln
-*.vcxproj.*
-BucketEngine/compile.bat
+BucketEngine/*.vcxproj.*
+BucketEngine/*.vcxproj
+compile.bat
