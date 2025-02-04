@@ -30,7 +30,7 @@ namespace bucketengine
         void CreateCommandBuffer();
         void DrawFrame();
         
-        BEWindow beWindow{WIDTH, HEIGHT, "HELLO WORLD"};
+        BEWindow beWindow{WIDTH, HEIGHT, "Bucket Engine"};
         BucketEngineDevice beDevice{beWindow};
         BucketEngineSwapChain beSwapChain{beDevice, beWindow.getExtent()};
         std::unique_ptr<BEPipeline> bePipeline;

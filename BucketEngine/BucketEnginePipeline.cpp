@@ -24,6 +24,12 @@ namespace bucketengine
         vkDestroyPipeline(beDevice.device(), graphicsPipeline, nullptr);
     }
 
+    void BEPipeline::Bind(VkCommandBuffer commandBuffer)
+    {
+        // specify a graphics pipeline over compute or RT
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+    }
+
     PipelineConfigInfo BEPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height)
     {
         PipelineConfigInfo configInfo{};

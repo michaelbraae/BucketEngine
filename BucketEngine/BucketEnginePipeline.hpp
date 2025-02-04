@@ -35,6 +35,7 @@ namespace bucketengine
         BEPipeline(const BEPipeline&) = delete;
         void operator=(const BEPipeline&) = delete;
 
+        void Bind(VkCommandBuffer commandBuffer);
         static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
 
     private:
