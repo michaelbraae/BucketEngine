@@ -143,17 +143,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BEWindow.cpp" />
+    <ClCompile Include="BucketEngineWindow.cpp" />
     <ClCompile Include="BucketEnginePipeline.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="BucketEngineDevice.cpp" />
+    <ClCompile Include="BucketEngineSwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BEWindow.hpp" />
+    <ClInclude Include="BucketEngineWindow.hpp" />
     <ClInclude Include="BucketEnginePipeline.hpp" />
     <ClInclude Include="App.hpp" />
     <ClInclude Include="BucketEngineDevice.hpp" />
+    <ClInclude Include="BucketEngineSwapChain.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
