@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include "BucketEngineWindow.hpp"
-#include "BucketEnginePipeline.hpp"
-#include "BucketEngineDevice.hpp"
-#include "BucketEngineSwapChain.hpp"
+#include "BEWindow.hpp"
+#include "BEPipeline.hpp"
+#include "BEDevice.hpp"
+#include "BESwapChain.hpp"
 
 // std
 #include <memory>
@@ -31,8 +31,8 @@ namespace bucketengine
         void DrawFrame();
         
         BEWindow beWindow{WIDTH, HEIGHT, "Bucket Engine"};
-        BucketEngineDevice beDevice{beWindow};
-        BucketEngineSwapChain beSwapChain{beDevice, beWindow.getExtent()};
+        BEDevice beDevice{beWindow};
+        BESwapChain beSwapChain{beDevice, beWindow.getExtent()};
         std::unique_ptr<BEPipeline> bePipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;

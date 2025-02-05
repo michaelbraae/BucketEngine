@@ -1,7 +1,7 @@
 #pragma once
 
 // #include "my_engine_window.hpp"
-#include "BucketEngineWindow.hpp"
+#include "BEWindow.hpp"
 
 // std lib headers
 #include <string>
@@ -23,7 +23,7 @@ struct QueueFamilyIndices {
   bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
 };
 
-class BucketEngineDevice {
+class BEDevice {
  public:
 #ifdef NDEBUG
   const bool enableValidationLayers = false;
@@ -31,14 +31,14 @@ class BucketEngineDevice {
   const bool enableValidationLayers = true;
 #endif
 
-  BucketEngineDevice(BEWindow &window);
-  ~BucketEngineDevice();
+  BEDevice(BEWindow &window);
+  ~BEDevice();
 
   // Not copyable or movable
-  BucketEngineDevice(const BucketEngineDevice &) = delete;
-  void operator=(const BucketEngineDevice &) = delete;
-  BucketEngineDevice(BucketEngineDevice &&) = delete;
-  BucketEngineDevice &operator=(BucketEngineDevice &&) = delete;
+  BEDevice(const BEDevice &) = delete;
+  void operator=(const BEDevice &) = delete;
+  BEDevice(BEDevice &&) = delete;
+  BEDevice &operator=(BEDevice &&) = delete;
 
   VkCommandPool getCommandPool() { return commandPool; }
   VkDevice device() { return device_; }

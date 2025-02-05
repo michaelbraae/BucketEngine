@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "BucketEngineDevice.hpp"
+#include "BEDevice.hpp"
 #include <string>
 #include <vector>
 
@@ -25,7 +25,7 @@ namespace bucketengine
     {
     public:
         BEPipeline(
-            BucketEngineDevice &device,
+            BEDevice &device,
             const std::string vertFilePath,
             const std::string fragFilePath,
             const PipelineConfigInfo& configInfo
@@ -49,7 +49,7 @@ namespace bucketengine
 
         void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 
-        BucketEngineDevice& beDevice;
+        BEDevice& beDevice;
         VkPipeline graphicsPipeline;
         VkShaderModule vertShaderModule;
         VkShaderModule fragShaderModule;

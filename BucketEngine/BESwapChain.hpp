@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BucketEngineDevice.hpp"
+#include "BEDevice.hpp"
 
 // vulkan headers
 #include <vulkan/vulkan.h>
@@ -11,15 +11,15 @@
 
 namespace bucketengine {
 
-class BucketEngineSwapChain {
+class BESwapChain {
  public:
   static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-  BucketEngineSwapChain(BucketEngineDevice &deviceRef, VkExtent2D windowExtent);
-  ~BucketEngineSwapChain();
+  BESwapChain(BEDevice &deviceRef, VkExtent2D windowExtent);
+  ~BESwapChain();
 
-  BucketEngineSwapChain(const BucketEngineSwapChain &) = delete;
-  void operator=(const BucketEngineSwapChain &) = delete;
+  BESwapChain(const BESwapChain &) = delete;
+  void operator=(const BESwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
   VkRenderPass getRenderPass() { return renderPass; }
@@ -65,7 +65,7 @@ class BucketEngineSwapChain {
   std::vector<VkImage> swapChainImages;
   std::vector<VkImageView> swapChainImageViews;
 
-  BucketEngineDevice &device;
+  BEDevice &device;
   VkExtent2D windowExtent;
 
   VkSwapchainKHR swapChain;

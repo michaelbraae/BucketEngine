@@ -1,4 +1,4 @@
-#include "BucketEngineSwapChain.hpp"
+#include "BESwapChain.hpp"
 
 // std
 #include <array>
@@ -11,7 +11,7 @@
 
 namespace bucketengine {
 
-BucketEngineSwapChain::BucketEngineSwapChain(BucketEngineDevice &deviceRef, VkExtent2D extent)
+BESwapChain::BESwapChain(BEDevice &deviceRef, VkExtent2D extent)
     : device{deviceRef}, windowExtent{extent} {
   createSwapChain();
   createImageViews();
@@ -21,7 +21,7 @@ BucketEngineSwapChain::BucketEngineSwapChain(BucketEngineDevice &deviceRef, VkEx
   createSyncObjects();
 }
 
-BucketEngineSwapChain::~BucketEngineSwapChain() {
+BESwapChain::~BESwapChain() {
   for (auto imageView : swapChainImageViews) {
     vkDestroyImageView(device.device(), imageView, nullptr);
   }
@@ -52,7 +52,7 @@ BucketEngineSwapChain::~BucketEngineSwapChain() {
   }
 }
 
-VkResult BucketEngineSwapChain::acquireNextImage(uint32_t *imageIndex) {
+VkResult BESwapChain::acquireNextImage(uint32_t *imageIndex) {
   vkWaitForFences(
       device.device(),
       1,
@@ -71,7 +71,7 @@ VkResult BucketEngineSwapChain::acquireNextImage(uint32_t *imageIndex) {
   return result;
 }
 
-VkResult BucketEngineSwapChain::submitCommandBuffers(
+VkResult BESwapChain::submitCommandBuffers(
     const VkCommandBuffer *buffers, uint32_t *imageIndex) {
   if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
     vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
@@ -119,7 +119,7 @@ VkResult BucketEngineSwapChain::submitCommandBuffers(
   return result;
 }
 
-void BucketEngineSwapChain::createSwapChain() {
+void BESwapChain::createSwapChain() {
   SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
   VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -180,7 +180,7 @@ void BucketEngineSwapChain::createSwapChain() {
   swapChainExtent = extent;
 }
 
-void BucketEngineSwapChain::createImageViews() {
+void BESwapChain::createImageViews() {
   swapChainImageViews.resize(swapChainImages.size());
   for (size_t i = 0; i < swapChainImages.size(); i++) {
     VkImageViewCreateInfo viewInfo{};
@@ -201,7 +201,7 @@ void BucketEngineSwapChain::createImageViews() {
   }
 }
 
-void BucketEngineSwapChain::createRenderPass() {
+void BESwapChain::createRenderPass() {
   VkAttachmentDescription depthAttachment{};
   depthAttachment.format = findDepthFormat();
   depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -262,7 +262,7 @@ void BucketEngineSwapChain::createRenderPass() {
   }
 }
 
-void BucketEngineSwapChain::createFramebuffers() {
+void BESwapChain::createFramebuffers() {
   swapChainFramebuffers.resize(imageCount());
   for (size_t i = 0; i < imageCount(); i++) {
     std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
@@ -287,7 +287,7 @@ void BucketEngineSwapChain::createFramebuffers() {
   }
 }
 
-void BucketEngineSwapChain::createDepthResources() {
+void BESwapChain::createDepthResources() {
   VkFormat depthFormat = findDepthFormat();
   VkExtent2D swapChainExtent = getSwapChainExtent();
 
@@ -335,7 +335,7 @@ void BucketEngineSwapChain::createDepthResources() {
   }
 }
 
-void BucketEngineSwapChain::createSyncObjects() {
+void BESwapChain::createSyncObjects() {
   imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
   renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
   inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -359,7 +359,7 @@ void BucketEngineSwapChain::createSyncObjects() {
   }
 }
 
-VkSurfaceFormatKHR BucketEngineSwapChain::chooseSwapSurfaceFormat(
+VkSurfaceFormatKHR BESwapChain::chooseSwapSurfaceFormat(
     const std::vector<VkSurfaceFormatKHR> &availableFormats) {
   for (const auto &availableFormat : availableFormats) {
     if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
@@ -371,7 +371,7 @@ VkSurfaceFormatKHR BucketEngineSwapChain::chooseSwapSurfaceFormat(
   return availableFormats[0];
 }
 
-VkPresentModeKHR BucketEngineSwapChain::chooseSwapPresentMode(
+VkPresentModeKHR BESwapChain::chooseSwapPresentMode(
     const std::vector<VkPresentModeKHR> &availablePresentModes) {
 
   // Mailbox: Lower latency, not always supported, high power consumption
@@ -395,7 +395,7 @@ VkPresentModeKHR BucketEngineSwapChain::chooseSwapPresentMode(
   return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D BucketEngineSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
+VkExtent2D BESwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
   if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
     return capabilities.currentExtent;
   } else {
@@ -411,7 +411,7 @@ VkExtent2D BucketEngineSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKH
   }
 }
 
-VkFormat BucketEngineSwapChain::findDepthFormat() {
+VkFormat BESwapChain::findDepthFormat() {
   return device.findSupportedFormat(
       {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
       VK_IMAGE_TILING_OPTIMAL,

@@ -1,4 +1,4 @@
-﻿#include "BucketEnginePipeline.hpp"
+﻿#include "BEPipeline.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -8,7 +8,7 @@
 namespace bucketengine
 {
     BEPipeline::BEPipeline(
-        BucketEngineDevice &device,
+        BEDevice &device,
         const std::string vertFilePath,
         const std::string fragFilePath,
         const PipelineConfigInfo& configInfo
