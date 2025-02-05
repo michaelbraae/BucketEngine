@@ -7,6 +7,7 @@ namespace bucketengine
 {
     App::App()
     {
+        LoadModels();
         CreatePipelineLayout();
         CreatePipeline();
         CreateCommandBuffer();
@@ -26,6 +27,17 @@ namespace bucketengine
         }
 
         vkDeviceWaitIdle(beDevice.device());
+    }
+
+    void App::LoadModels()
+    {
+        std::vector<BEModel::Vertex> vertices {
+           {{0.0f, -0.5f}},
+           {{0.5f, 0.5f}},
+           {{-0.5f, 0.5f}}
+        };
+        
+        beModel = std::make_unique<BEModel>(beDevice, vertices);
     }
 
     void App::CreatePipelineLayout()
@@ -98,9 +110,8 @@ namespace bucketengine
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             bePipeline->Bind(commandBuffers[i]);
-
-            // TODO: for now our vertex shader only has 3 vertices, so we can hard code this
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+            beModel->Bind(commandBuffers[i]);
+            beModel->Draw(commandBuffers[i]);
 
             vkCmdEndRenderPass(commandBuffers[i]);
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)

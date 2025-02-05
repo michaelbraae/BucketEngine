@@ -1,6 +1,9 @@
 ﻿#pragma once
 
 #include "BEDevice.hpp"
+#include "BEModel.hpp"
+
+// std
 #include <string>
 #include <vector>
 

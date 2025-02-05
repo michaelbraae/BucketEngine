@@ -4,6 +4,7 @@
 #include "BEPipeline.hpp"
 #include "BEDevice.hpp"
 #include "BESwapChain.hpp"
+#include "BEModel.hpp"
 
 // std
 #include <memory>
@@ -25,6 +26,7 @@ namespace bucketengine
 
         void run();
     private:
+        void LoadModels();
         void CreatePipelineLayout();
         void CreatePipeline();
         void CreateCommandBuffer();
@@ -36,6 +38,7 @@ namespace bucketengine
         std::unique_ptr<BEPipeline> bePipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
+        std::unique_ptr<BEModel> beModel;
     };
     
 }
