@@ -10,7 +10,7 @@ namespace bucketengine
         loadModels();
         createPipelineLayout();
         recreateSwapChain();
-        createCommandBuffer();
+        createCommandBuffers();
     }
 
     App::~App()
@@ -57,18 +57,21 @@ namespace bucketengine
 
     void App::createPipeline()
     {
-        auto pipelineConfig = BEPipeline::defaultPipelineConfigInfo(beSwapChain->width(), beSwapChain->height());
-        pipelineConfig.renderPass = beSwapChain->getRenderPass();
-        pipelineConfig.pipelineLayout = pipelineLayout;
+        assert(beSwapChain != nullptr && "Attempting to create pipeline with nullptr swap chain");
+        assert(pipelineLayout != nullptr && "Attempting to create pipeline with nullptr pipeline layout");
+        PipelineConfigInfo pipelineConfigInfo{};
+        BEPipeline::defaultPipelineConfigInfo(pipelineConfigInfo);
+        pipelineConfigInfo.renderPass = beSwapChain->getRenderPass();
+        pipelineConfigInfo.pipelineLayout = pipelineLayout;
         bePipeline = std::make_unique<BEPipeline>(
             beDevice,
             "shaders/simple_shader.vert.spv",
             "shaders/simple_shader.frag.spv",
-            pipelineConfig
+            pipelineConfigInfo
         );
     }
 
-    void App::createCommandBuffer()
+    void App::createCommandBuffers()
     {
         commandBuffers.resize(beSwapChain->imageCount());
 
@@ -82,6 +85,17 @@ namespace bucketengine
         {
             throw std::runtime_error("Failed to allocate command buffers");
         }
+    }
+
+    void App::freeCommandBuffers()
+    {
+        vkFreeCommandBuffers(
+            beDevice.device(),
+            beDevice.getCommandPool(),
+            static_cast<uint32_t>(commandBuffers.size()),
+            commandBuffers.data()
+        );
+        commandBuffers.clear();
     }
 
     void App::drawFrame()
@@ -129,9 +143,20 @@ namespace bucketengine
 
         vkDeviceWaitIdle(beDevice.device());
 
-        beSwapChain = nullptr;
+        if (beSwapChain == nullptr)
+        {
+            beSwapChain = std::make_unique<BESwapChain>(beDevice, extent);
+        }
+        else
+        {
+            beSwapChain = std::make_unique<BESwapChain>(beDevice, extent, std::move(beSwapChain));
+            if (beSwapChain->imageCount() != commandBuffers.size())
+            {
+                freeCommandBuffers();
+                createCommandBuffers();
+            }
+        }
         
-        beSwapChain = std::make_unique<BESwapChain>(beDevice, extent);
         createPipeline();
     }
 
@@ -160,6 +185,17 @@ namespace bucketengine
         renderPassInfo.pClearValues = clearValues.data();
 
         vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(beSwapChain->getSwapChainExtent().width);
+        viewport.height = static_cast<float>(beSwapChain->getSwapChainExtent().height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissor{{0, 0}, beSwapChain->getSwapChainExtent()};
+        vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
 
         bePipeline->bind(commandBuffers[imageIndex]);
         beModel->bind(commandBuffers[imageIndex]);
