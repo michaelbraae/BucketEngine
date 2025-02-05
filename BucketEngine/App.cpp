@@ -32,9 +32,9 @@ namespace bucketengine
     void App::LoadModels()
     {
         std::vector<BEModel::Vertex> vertices {
-           {{0.0f, -0.5f}},
-           {{0.5f, 0.5f}},
-           {{-0.5f, 0.5f}}
+           {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+           {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+           {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
         };
         
         beModel = std::make_unique<BEModel>(beDevice, vertices);
