@@ -19,7 +19,7 @@ class BESwapChain {
   ~BESwapChain();
 
   BESwapChain(const BESwapChain &) = delete;
-  void operator=(const BESwapChain &) = delete;
+  BESwapChain& operator=(const BESwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
   VkRenderPass getRenderPass() { return renderPass; }

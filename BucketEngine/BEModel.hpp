@@ -30,11 +30,11 @@ namespace bucketengine
         BEModel(const BEModel &) = delete;
         BEModel &operator=(const BEModel &) = delete;
 
-        void Bind(VkCommandBuffer commandBuffer);
-        void Draw(VkCommandBuffer commandBuffer);
+        void bind(VkCommandBuffer commandBuffer);
+        void draw(VkCommandBuffer commandBuffer);
         
     private:
-        void CreateVertexBuffers(const std::vector<Vertex> &vertices);
+        void createVertexBuffers(const std::vector<Vertex> &vertices);
         
         BEDevice& beDevice;
         VkBuffer vertexBuffer;

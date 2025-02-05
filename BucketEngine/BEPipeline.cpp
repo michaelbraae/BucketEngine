@@ -14,7 +14,7 @@ namespace bucketengine
         const PipelineConfigInfo& configInfo
     ) : beDevice(device)
     {
-        CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
+        createGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
     }
 
     BEPipeline::~BEPipeline()
@@ -24,7 +24,7 @@ namespace bucketengine
         vkDestroyPipeline(beDevice.device(), graphicsPipeline, nullptr);
     }
 
-    void BEPipeline::Bind(VkCommandBuffer commandBuffer)
+    void BEPipeline::bind(VkCommandBuffer commandBuffer)
     {
         // specify a graphics pipeline over compute or RT
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
@@ -124,7 +124,7 @@ namespace bucketengine
         return configInfo;
     }
 
-    std::vector<char> BEPipeline::ReadFile(const std::string& filepath)
+    std::vector<char> BEPipeline::readFile(const std::string& filepath)
     {
         std::ifstream file{filepath, std::ios::ate | std::ios::binary};
 
@@ -144,7 +144,7 @@ namespace bucketengine
         return buffer;
     }
 
-    void BEPipeline::CreateGraphicsPipeline(const std::string vertFilePath, const std::string fragFilePath, const PipelineConfigInfo& configInfo)
+    void BEPipeline::createGraphicsPipeline(const std::string vertFilePath, const std::string fragFilePath, const PipelineConfigInfo& configInfo)
     {
         assert(configInfo.pipelineLayout != VK_NULL_HANDLE &&
             "Cannot create graphics pipeline: no pipeline provided in configInfo"
@@ -152,14 +152,14 @@ namespace bucketengine
         assert(configInfo.renderPass != VK_NULL_HANDLE &&
             "Cannot create graphics pipeline: no renderPass provided in configInfo"
         );
-        auto vertCode = ReadFile(vertFilePath);
-        auto fragCode = ReadFile(fragFilePath);
+        auto vertCode = readFile(vertFilePath);
+        auto fragCode = readFile(fragFilePath);
 
         // std::cout << "Vertex shader code size: " << vertCode.size() << "\n";
         // std::cout << "Fragment shader code size: " << fragCode.size() << "\n";
         
-        CreateShaderModule(vertCode, &vertShaderModule);
-        CreateShaderModule(fragCode, &fragShaderModule);
+        createShaderModule(vertCode, &vertShaderModule);
+        createShaderModule(fragCode, &fragShaderModule);
         
         // initialise our vertex shader stage
         VkPipelineShaderStageCreateInfo shaderStages[2];
@@ -223,7 +223,7 @@ namespace bucketengine
         
     }
 
-    void BEPipeline::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
+    void BEPipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
     {
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

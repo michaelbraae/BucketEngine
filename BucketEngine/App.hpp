@@ -26,15 +26,17 @@ namespace bucketengine
 
         void run();
     private:
-        void LoadModels();
-        void CreatePipelineLayout();
-        void CreatePipeline();
-        void CreateCommandBuffer();
-        void DrawFrame();
+        void loadModels();
+        void createPipelineLayout();
+        void createPipeline();
+        void createCommandBuffer();
+        void drawFrame();
+        void recreateSwapChain();
+        void recordCommandBuffer(int imageIndex);
         
         BEWindow beWindow{WIDTH, HEIGHT, "Bucket Engine"};
         BEDevice beDevice{beWindow};
-        BESwapChain beSwapChain{beDevice, beWindow.getExtent()};
+        std::unique_ptr<BESwapChain> beSwapChain;
         std::unique_ptr<BEPipeline> bePipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;

@@ -34,7 +34,7 @@ namespace bucketengine
     
     BEModel::BEModel(BEDevice& device, const std::vector<Vertex>& vertices) : beDevice{device}
     {
-        CreateVertexBuffers(vertices);
+        createVertexBuffers(vertices);
     }
 
     BEModel::~BEModel()
@@ -43,19 +43,19 @@ namespace bucketengine
         vkFreeMemory(beDevice.device(), vertexBufferMemory, nullptr);
     }
 
-    void BEModel::Bind(VkCommandBuffer commandBuffer)
+    void BEModel::bind(VkCommandBuffer commandBuffer)
     {
         VkBuffer buffers[] = {vertexBuffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
     }
 
-    void BEModel::Draw(VkCommandBuffer commandBuffer)
+    void BEModel::draw(VkCommandBuffer commandBuffer)
     {
         vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
     }
 
-    void BEModel::CreateVertexBuffers(const std::vector<Vertex>& vertices)
+    void BEModel::createVertexBuffers(const std::vector<Vertex>& vertices)
     {
         vertexCount = static_cast<uint32_t>(vertices.size());
         
