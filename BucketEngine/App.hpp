@@ -6,12 +6,23 @@
 #include "BESwapChain.hpp"
 #include "BEModel.hpp"
 
+// libs
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+
 // std
 #include <memory>
 #include <vector>
 
 namespace bucketengine
 {
+    struct SimplePushConstantData
+    {
+        glm::vec2 offset;
+        alignas(16) glm::vec3 color;
+    };
+    
     class App
     {
     public:
