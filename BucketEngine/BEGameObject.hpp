@@ -10,11 +10,17 @@ namespace bucketengine
     {
         glm::vec2 tranlation{};
         glm::vec2 scale{1.f, 1.f};
+        float rotation;
 
         glm::mat2 mat2()
         {
+            const float s = glm::sin(rotation);
+            const float c = glm::cos(rotation);
+            glm::mat2 rotMatrix{{c, s}, {-s, c}};
+            
             glm::mat2 scaleMat{{scale.x, .0f}, {.0f, scale.y}};
-            return glm::mat2{1.f};
+
+            return rotMatrix * scaleMat;
         }
     };
     // the root class for all game objects
