@@ -7,7 +7,7 @@ namespace bucketengine
 {
     App::App()
     {
-        loadModels();
+        loadGameObjects();
         createPipelineLayout();
         recreateSwapChain();
         createCommandBuffers();
@@ -29,7 +29,7 @@ namespace bucketengine
         vkDeviceWaitIdle(beDevice.device());
     }
 
-    void App::loadModels()
+    void App::loadGameObjects()
     {
         std::vector<BEModel::Vertex> vertices {
            {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
@@ -37,7 +37,14 @@ namespace bucketengine
            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
         };
         
-        beModel = std::make_unique<BEModel>(beDevice, vertices);
+        auto beModel = std::make_shared<BEModel>(beDevice, vertices);
+        
+        auto triangle = BEGameObject::createGameObject();
+        triangle.model = beModel;
+        triangle.color = {.1f, .8f, .1f};
+        triangle.transform2d.tranlation.x = .2f;
+        
+        gameObjects.push_back(std::move(triangle));
     }
 
     void App::createPipelineLayout()
@@ -112,7 +119,7 @@ namespace bucketengine
         {
             recreateSwapChain();
             return;
-        } 
+        }
 
         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         {
@@ -167,9 +174,6 @@ namespace bucketengine
 
     void App::recordCommandBuffer(int imageIndex)
     {
-        static int frame = 0;
-        frame = (frame + 1) % 1000;
-        
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -205,30 +209,37 @@ namespace bucketengine
         vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
         vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
 
-        bePipeline->bind(commandBuffers[imageIndex]);
-        beModel->bind(commandBuffers[imageIndex]);
+        renderGameObjects(commandBuffers[imageIndex]);
 
-        for (int j = 0; j < 4; j++)
+        vkCmdEndRenderPass(commandBuffers[imageIndex]);
+        if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to end command buffer");
+        }
+    }
+
+    void App::renderGameObjects(VkCommandBuffer commandBuffer)
+    {
+        bePipeline->bind(commandBuffer);
+
+        for (auto& obj: gameObjects)
         {
             SimplePushConstantData push{};
-            push.offset = {-0.5f + frame * 0.002, -0.4f + j * 0.25f};
-            push.color = {0.0f, 0.0f, 0.2f + 0.2f * j};
+            push.offset = obj.transform2d.tranlation;
+            push.color = obj.color;
+            push.transform = obj.transform2d.mat2();
 
             vkCmdPushConstants(
-                commandBuffers[imageIndex],
+                commandBuffer,
                 pipelineLayout,
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
                 0,
                 sizeof(SimplePushConstantData),
                 &push
             );
-            beModel->draw(commandBuffers[imageIndex]);
-        }
 
-        vkCmdEndRenderPass(commandBuffers[imageIndex]);
-        if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to end command buffer");
+            obj.model->bind(commandBuffer);
+            obj.model->draw(commandBuffer);
         }
     }
 }
