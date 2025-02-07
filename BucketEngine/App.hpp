@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "BEWindow.hpp"
-#include "BEPipeline.hpp"
 #include "BEGameObject.hpp"
 #include "BEDevice.hpp"
 #include "BERenderer.hpp"
@@ -19,17 +18,6 @@
 
 namespace bucketengine
 {
-    // TODO: further reading into alignment, offset and stride assignment
-    // When using 32bit float precision, scalar float N = 4 bytes
-    // therefore vec2 is 8 bytes
-    // in device memory, we require the alignment to be explicit
-    struct SimplePushConstantData
-    {
-        glm::mat2 transform{1.f};
-        glm::vec2 offset;
-        alignas(16) glm::vec3 color;
-    };
-    
     class App
     {
     public:
@@ -45,16 +33,11 @@ namespace bucketengine
         void run();
     private:
         void loadGameObjects();
-        void createPipelineLayout();
-        void createPipeline();
-        void renderGameObjects(VkCommandBuffer commandBuffer);
         
         BEWindow beWindow{WIDTH, HEIGHT, "Bucket Engine"};
         BEDevice beDevice{beWindow};
         BERenderer beRenderer{beWindow, beDevice};
         
-        std::unique_ptr<BEPipeline> bePipeline;
-        VkPipelineLayout pipelineLayout;
         std::vector<BEGameObject> gameObjects;
     };
     
