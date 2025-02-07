@@ -4,7 +4,7 @@
 #include "BEPipeline.hpp"
 #include "BEGameObject.hpp"
 #include "BEDevice.hpp"
-#include "BESwapChain.hpp"
+#include "BERenderer.hpp"
 #include "BEModel.hpp"
 
 // libs
@@ -47,19 +47,14 @@ namespace bucketengine
         void loadGameObjects();
         void createPipelineLayout();
         void createPipeline();
-        void createCommandBuffers();
-        void freeCommandBuffers();
-        void drawFrame();
-        void recreateSwapChain();
-        void recordCommandBuffer(int imageIndex);
         void renderGameObjects(VkCommandBuffer commandBuffer);
         
         BEWindow beWindow{WIDTH, HEIGHT, "Bucket Engine"};
         BEDevice beDevice{beWindow};
-        std::unique_ptr<BESwapChain> beSwapChain;
+        BERenderer beRenderer{beWindow, beDevice};
+        
         std::unique_ptr<BEPipeline> bePipeline;
         VkPipelineLayout pipelineLayout;
-        std::vector<VkCommandBuffer> commandBuffers;
         std::vector<BEGameObject> gameObjects;
     };
     

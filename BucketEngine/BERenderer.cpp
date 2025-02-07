@@ -65,8 +65,7 @@ namespace bucketengine
         {
             beWindow.resetWindowResizedFlag();
             recreateSwapChain();
-        }
-        if (result != VK_SUCCESS)
+        } else if (result != VK_SUCCESS)
         {
             throw std::runtime_error("Failed to submit command buffers");
         }
