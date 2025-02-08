@@ -71,6 +71,8 @@ namespace bucketengine
         }
         
         isFrameStarted = false;
+
+        currentImageIndex = (currentImageIndex + 1) % BESwapChain::MAX_FRAMES_IN_FLIGHT;
     }
 
     void BERenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
@@ -117,7 +119,7 @@ namespace bucketengine
 
     void BERenderer::createCommandBuffers()
     {
-        commandBuffers.resize(beSwapChain->imageCount());
+        commandBuffers.resize(BESwapChain::MAX_FRAMES_IN_FLIGHT);
 
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -162,11 +164,15 @@ namespace bucketengine
         }
         else
         {
-            beSwapChain = std::make_unique<BESwapChain>(beDevice, extent, std::move(beSwapChain));
-            if (beSwapChain->imageCount() != commandBuffers.size())
+            std::shared_ptr<BESwapChain> oldSwapChain = std::move(beSwapChain);
+            beSwapChain = std::make_unique<BESwapChain>(beDevice, extent, oldSwapChain);
+
+            if (!oldSwapChain->compareSwapFormats(*beSwapChain.get()))
             {
-                freeCommandBuffers();
-                createCommandBuffers();
+                // rather than throwing an error it would be better to
+                // set up a callback function to tell the app
+                // a new incompatable render pass has been created 
+                throw std::runtime_error("Swap chain image format has changed");
             }
         }
         
