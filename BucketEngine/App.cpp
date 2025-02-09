@@ -39,20 +39,71 @@ namespace bucketengine
 
     void App::loadGameObjects()
     {
-        std::vector<BEModel::Vertex> vertices {
-           {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-           {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-           {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+        std::shared_ptr<BEModel> beModel = createCubeModel(beDevice, {.0f, .0f, .0f});
+
+        auto cube = BEGameObject::createGameObject();
+        cube.model = beModel;
+        cube.transform.translation = {.0f, .0f, .5f};
+        cube.transform.scale = {.5f, .5f, .5f};
+
+        gameObjects.push_back(std::move(cube));
+    }
+    
+    std::unique_ptr<BEModel> App::createCubeModel(BEDevice& device, glm::vec3 offset) {
+        std::vector<BEModel::Vertex> vertices{
+ 
+            // left face (white)
+            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+            {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+
+            // right face (yellow)
+            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+            {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+
+            // top face (orange, remember y axis points down)
+            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+
+            // bottom face (red)
+            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+
+            // nose face (blue)
+            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+
+            // tail face (green)
+            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+
         };
-        
-        auto beModel = std::make_shared<BEModel>(beDevice, vertices);
-        
-        auto triangle = BEGameObject::createGameObject();
-        triangle.model = beModel;
-        triangle.color = {.1f, .8f, .1f};
-        triangle.transform2d.tranlation.x = .2f;
-        triangle.transform2d.rotation = .25f * glm::two_pi<float>();
-        
-        gameObjects.push_back(std::move(triangle));
+        for (auto& v : vertices) {
+            v.position += offset;
+        }
+        return std::make_unique<BEModel>(device, vertices);
     }
 }

@@ -33,6 +33,8 @@ namespace bucketengine
         void run();
     private:
         void loadGameObjects();
+        std::unique_ptr<BEModel> createCubeModel(BEDevice& device, glm::vec3 offset);
+
         
         BEWindow beWindow{WIDTH, HEIGHT, "Bucket Engine"};
         BEDevice beDevice{beWindow};

@@ -23,8 +23,7 @@ namespace bucketengine
     // in device memory, we require the alignment to be explicit
     struct SimplePushConstantData
     {
-        glm::mat2 transform{1.f};
-        glm::vec2 offset;
+        glm::mat4 transform{1.f};
         alignas(16) glm::vec3 color;
     };
     
