@@ -96,6 +96,11 @@ namespace bucketengine
 
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+        // the viewport is a fixed function vertex post processing transformation
+        // so this transformation is automatically applied following the vertex shader
+        // mapping the canonical view volume (vulkan's view volume)
+        // to the region of the target frame buffer as specified by the viewport
+        // in this case, the specification is retrieved by the swap chain handler
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;

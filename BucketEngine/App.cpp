@@ -1,6 +1,7 @@
 ﻿#include "App.hpp"
 
 #include "BERenderSystem.hpp"
+#include "camera/BECamera.hpp"
 
 #include <stdexcept>
 #include <array>
@@ -17,6 +18,8 @@ namespace bucketengine
     void App::run()
     {
         BERenderSystem renderSystem{beDevice, beRenderer.getSwapChainRenderPass()};
+        BECamera camera{};
+        camera.setOrthographicProjection(-1, 1, -1, 1, -1, 1);
         while (!beWindow.shouldClose())
         {
             glfwPollEvents();
@@ -26,9 +29,9 @@ namespace bucketengine
                 // begin offscreen shadow pass
                 // render shadow casting objects
                 // end offscreen shadow pass
-                
+
                 beRenderer.beginSwapChainRenderPass(commandBuffer);
-                renderSystem.renderGameObjects(commandBuffer, gameObjects);
+                renderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
                 beRenderer.endSwapChainRenderPass(commandBuffer);
                 beRenderer.endFrame();
             }
@@ -48,7 +51,7 @@ namespace bucketengine
 
         gameObjects.push_back(std::move(cube));
     }
-    
+
     std::unique_ptr<BEModel> App::createCubeModel(BEDevice& device, glm::vec3 offset) {
         std::vector<BEModel::Vertex> vertices{
  

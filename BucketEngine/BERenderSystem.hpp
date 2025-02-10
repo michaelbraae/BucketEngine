@@ -4,6 +4,7 @@
 #include "BEPipeline.hpp"
 #include "BEGameObject.hpp"
 #include "BEDevice.hpp"
+#include "camera/BECamera.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -37,7 +38,7 @@ namespace bucketengine
         BERenderSystem(const BERenderSystem &) = delete;
         BERenderSystem &operator=(const BERenderSystem &) = delete;
 
-        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<BEGameObject> &gameObjects);
+        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<BEGameObject> &gameObjects, const BECamera& camera);
     private:
         void createPipelineLayout();
         void createPipeline(VkRenderPass renderPass);

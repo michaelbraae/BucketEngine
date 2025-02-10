@@ -16,7 +16,7 @@ namespace bucketengine
         vkDestroyPipelineLayout(beDevice.device(), pipelineLayout, nullptr);
     }
 
-    void BERenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<BEGameObject> &gameObjects)
+    void BERenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<BEGameObject> &gameObjects, const BECamera& camera)
     {
         bePipeline->bind(commandBuffer);
 
@@ -27,7 +27,7 @@ namespace bucketengine
             
             SimplePushConstantData push{};
             push.color = obj.color;
-            push.transform = obj.transform.mat4();
+            push.transform = camera.getProjection() * obj.transform.mat4();
 
             vkCmdPushConstants(
                 commandBuffer,
