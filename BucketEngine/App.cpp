@@ -1,6 +1,6 @@
 ﻿#include "App.hpp"
 
-#include "BERenderSystem.hpp"
+#include "renderer/BERenderSystem.hpp"
 #include "camera/BECamera.hpp"
 
 #include <stdexcept>

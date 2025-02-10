@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include "BEWindow.hpp"
-#include "BEDevice.hpp"
-#include "BESwapChain.hpp"
-#include "BEModel.hpp"
+#include "../BEWindow.hpp"
+#include "../BEDevice.hpp"
+#include "../BESwapChain.hpp"
+#include "../BEModel.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS

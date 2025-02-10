@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "BEModel.hpp"
+#include "../BEModel.hpp"
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>

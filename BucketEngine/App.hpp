@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 #include "BEWindow.hpp"
-#include "BEGameObject.hpp"
+#include "game/BEGameObject.hpp"
 #include "BEDevice.hpp"
-#include "BERenderer.hpp"
+#include "renderer/BERenderer.hpp"
 #include "BEModel.hpp"
 
 // libs
