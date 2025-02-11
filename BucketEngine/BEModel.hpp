@@ -23,8 +23,14 @@ namespace bucketengine
             static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
         };
-        
-        BEModel(BEDevice &device, const std::vector<Vertex> &vertices);
+
+        struct Builder
+        {
+            std::vector<Vertex> vertices{};
+            std::vector<uint32_t> indices{};
+        };
+
+        BEModel(BEDevice &device, const Builder &builder);
         ~BEModel();
 
         BEModel(const BEModel &) = delete;
@@ -32,13 +38,20 @@ namespace bucketengine
 
         void bind(VkCommandBuffer commandBuffer);
         void draw(VkCommandBuffer commandBuffer);
-        
+
     private:
         void createVertexBuffers(const std::vector<Vertex> &vertices);
-        
+        void createIndexBuffers(const std::vector<uint32_t> &indices);
+
         BEDevice& beDevice;
+
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         uint32_t vertexCount;
+
+        bool hasIndexBuffer = false;
+        VkBuffer indexBuffer;
+        VkDeviceMemory indexBufferMemory;
+        uint32_t indexCount;
     };
 }
