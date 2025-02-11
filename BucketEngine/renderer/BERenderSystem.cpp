@@ -27,7 +27,7 @@ namespace bucketengine
             SimplePushConstantData push{};
             auto modelMatrix = obj.transform.mat4();
             push.transform = projectionView * modelMatrix;
-            push.modelMatrix = modelMatrix;
+            push.normalMatrix = obj.transform.normalMatrix();
 
             vkCmdPushConstants(
                 commandBuffer,

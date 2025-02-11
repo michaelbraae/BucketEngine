@@ -36,7 +36,7 @@ namespace bucketengine
             // our delta time
             float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 
-            // store the current time value for the next iteration of the while loop
+            // store the current time value for the next iteration of the loop
             currentTime = newTime;
 
             // handle user input here for the time being until we make a more complete and dynamic implementation
