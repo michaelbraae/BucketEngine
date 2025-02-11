@@ -19,7 +19,9 @@ namespace bucketengine
     {
         BERenderSystem renderSystem{beDevice, beRenderer.getSwapChainRenderPass()};
         BECamera camera{};
-        
+        // camera.setViewDirection(glm::vec3(0.f), glm::vec3(.5f, 0.f, 1.f));
+        // if we change the camera's position too much, we may lose the cube as it's culled by the clipping planes
+        camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
         while (!beWindow.shouldClose())
         {
             glfwPollEvents();

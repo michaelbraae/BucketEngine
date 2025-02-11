@@ -27,11 +27,10 @@ namespace bucketengine
         glm::mat4 transform{1.f};
         alignas(16) glm::vec3 color;
     };
-    
+
     class BERenderSystem
     {
     public:
-        
         BERenderSystem(BEDevice &device, VkRenderPass renderPass);
         ~BERenderSystem();
 
@@ -42,9 +41,9 @@ namespace bucketengine
     private:
         void createPipelineLayout();
         void createPipeline(VkRenderPass renderPass);
-        
+
         BEDevice &beDevice;
-        
+
         std::unique_ptr<BEPipeline> bePipeline;
         VkPipelineLayout pipelineLayout;
     };
