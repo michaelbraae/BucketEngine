@@ -66,7 +66,8 @@ namespace bucketengine
 
     void App::loadGameObjects()
     {
-        std::shared_ptr<BEModel> beModel = createCubeModel(beDevice, {.0f, .0f, .0f});
+        // std::shared_ptr<BEModel> beModel = createCubeModel(beDevice, {.0f, .0f, .0f});
+        std::shared_ptr<BEModel> beModel = BEModel::createModelFromFile(beDevice, "models/smooth_vase.obj");
 
         auto cube = BEGameObject::createGameObject();
         cube.model = beModel;
