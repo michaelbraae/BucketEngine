@@ -30,7 +30,7 @@ namespace bucketengine
         bool isFrameInProgress() const { return isFrameStarted; }
 
         VkRenderPass getSwapChainRenderPass() const { return beSwapChain->getRenderPass(); }
-        float getAspectRation() const { return beSwapChain->extentAspectRatio(); }
+        float getAspectRatio() const { return beSwapChain->extentAspectRatio(); }
         VkCommandBuffer getCurrentCommandBuffer() const
         {
             assert(isFrameStarted && "Cannot get command buffer when frame not in progress");

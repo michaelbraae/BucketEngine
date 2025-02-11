@@ -22,6 +22,8 @@ namespace bucketengine
         
         bool getFrameBufferResized() { return frameBufferResized; }
         void resetWindowResizedFlag() { frameBufferResized = false; }
+
+        GLFWwindow *getGLFWwindow() const { return window; }
         
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
     private:
