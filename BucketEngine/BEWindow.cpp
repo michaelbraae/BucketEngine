@@ -20,7 +20,7 @@ namespace bucketengine
         if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
         {
              throw std::runtime_error("Failed to create window surface");
-        }   
+        }
     }
 
     void BEWindow::frameBufferResizedCallback(GLFWwindow* window, int width, int height)
@@ -41,5 +41,4 @@ namespace bucketengine
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, frameBufferResizedCallback);
     }
-
 }

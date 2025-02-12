@@ -56,29 +56,19 @@ namespace bucketengine
     }
 
     BEModel::~BEModel()
-    {
-        vkDestroyBuffer(beDevice.device(), vertexBuffer, nullptr);
-        vkFreeMemory(beDevice.device(), vertexBufferMemory, nullptr);
-
-        if (hasIndexBuffer)
-        {
-            vkDestroyBuffer(beDevice.device(), indexBuffer, nullptr);
-            vkFreeMemory(beDevice.device(), indexBufferMemory, nullptr);
-        }
-    }
+    {}
 
     std::unique_ptr<BEModel> BEModel::createModelFromFile(BEDevice& device, const std::string& filePath)
     {
         Builder builder{};
         builder.loadModel(filePath);
 
-
         return std::make_unique<BEModel>(device, builder);
     }
 
     void BEModel::bind(VkCommandBuffer commandBuffer)
     {
-        VkBuffer buffers[] = {vertexBuffer};
+        VkBuffer buffers[] = {vertexBuffer->getBuffer()};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
@@ -87,7 +77,7 @@ namespace bucketengine
         {
             // for now we use a 32bit index type so we don't have to change the index buffer if a model
             // has too many vertices for 16bit
-            vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
         }
     }
 
@@ -111,37 +101,28 @@ namespace bucketengine
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
         
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+        uint32_t vertexSize = sizeof(vertices[0]);
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        
-        beDevice.createBuffer(
-            bufferSize,
+        BEBuffer stagingBuffer{
+            beDevice,
+            vertexSize,
+            vertexCount,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            stagingBuffer,
-            stagingBufferMemory
-        );
-        
-        void *data;
-        
-        // creates a region of host memory, mapped to device memory
-        vkMapMemory(beDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
-        vkUnmapMemory(beDevice.device(), stagingBufferMemory);
+        };
 
-        beDevice.createBuffer(
-            bufferSize,
+        stagingBuffer.map();
+        stagingBuffer.writeToBuffer((void *)vertices.data());
+
+        vertexBuffer = std::make_unique<BEBuffer>(
+            beDevice,
+            vertexSize,
+            vertexCount,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            vertexBuffer,
-            vertexBufferMemory
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
         );
 
-        beDevice.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
-
-        vkDestroyBuffer(beDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(beDevice.device(), stagingBufferMemory, nullptr);
+        beDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
     }
 
     void BEModel::createIndexBuffers(const std::vector<uint32_t> &indices)
@@ -153,36 +134,28 @@ namespace bucketengine
 
         VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
+        uint32_t indexSize = sizeof(indices[0]);
 
-        beDevice.createBuffer(
-            bufferSize,
+        BEBuffer stagingBuffer{
+            beDevice,
+            indexSize,
+            indexCount,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            stagingBuffer,
-            stagingBufferMemory
-        );
+        };
 
-        void *data;
+        stagingBuffer.map();
+        stagingBuffer.writeToBuffer((void *)indices.data());
 
-        // creates a region of host memory, mapped to device memory
-        vkMapMemory(beDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
-        vkUnmapMemory(beDevice.device(), stagingBufferMemory);
-
-        beDevice.createBuffer(
-            bufferSize,
+        indexBuffer = std::make_unique<BEBuffer>(
+            beDevice,
+            indexSize,
+            indexCount,
             VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            indexBuffer,
-            indexBufferMemory
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
         );
 
-        beDevice.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-        vkDestroyBuffer(beDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(beDevice.device(), stagingBufferMemory, nullptr);
+        beDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
     }
 
     void BEModel::Builder::loadModel(const std::string& filePath)

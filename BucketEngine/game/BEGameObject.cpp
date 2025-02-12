@@ -42,7 +42,7 @@ namespace bucketengine
         const float s1 = glm::sin(rotation.y);
 
         const glm::vec3 inverseScale = 1.f / scale;
-        
+
         return glm::mat3{
             {
                 inverseScale.x * (c1 * c3 + s1 * s2 * s3),

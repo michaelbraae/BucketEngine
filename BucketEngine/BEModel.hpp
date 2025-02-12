@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "BEDevice.hpp"
-
+#include "buffers/BEBuffer.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -61,13 +61,15 @@ namespace bucketengine
 
         BEDevice& beDevice;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        std::unique_ptr<BEBuffer> vertexBuffer;
+        // VkBuffer vertexBuffer;
+        // VkDeviceMemory vertexBufferMemory;
         uint32_t vertexCount;
 
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+        std::unique_ptr<BEBuffer> indexBuffer;
+        // VkBuffer indexBuffer;
+        // VkDeviceMemory indexBufferMemory;
         uint32_t indexCount;
     };
 }
