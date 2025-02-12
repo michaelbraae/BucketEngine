@@ -3,6 +3,7 @@
 #include "renderer/BERenderSystem.hpp"
 #include "camera/BECamera.hpp"
 #include "input/BEKeyboardMovementController.hpp"
+#include "buffers/BEBuffer.hpp"
 
 #include <stdexcept>
 #include <array>
@@ -10,6 +11,13 @@
 
 namespace bucketengine
 {
+    // global uniform buffer object
+    struct GlobalUbo
+    {
+        glm::mat4 projectionView{1.f};
+        glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+    };
+    
     App::App()
     {
         loadGameObjects();
@@ -19,6 +27,19 @@ namespace bucketengine
 
     void App::run()
     {
+        BEBuffer globalUboBuffer{
+            beDevice,
+            sizeof(GlobalUbo),
+            BESwapChain::MAX_FRAMES_IN_FLIGHT,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+            beDevice.properties.limits.minUniformBufferOffsetAlignment
+        };
+        
+        // calling map on the buffer enables writing to it's memory
+        globalUboBuffer.map();
+
+        
         BERenderSystem renderSystem{beDevice, beRenderer.getSwapChainRenderPass()};
         BECamera camera{};
 
@@ -50,14 +71,30 @@ namespace bucketengine
 
             if (auto commandBuffer = beRenderer.beginFrame())
             {
+                int frameIndex = beRenderer.getFrameIndex();
+                FrameInfo frameInfo{
+                    frameIndex,
+                    frameTime,
+                    commandBuffer,
+                    camera
+                };
+
+                // update
+                GlobalUbo ubo{};
+                ubo.projectionView = camera.getProjection() * camera.getView();
+                globalUboBuffer.writeToIndex(&ubo, frameIndex);
+                globalUboBuffer.flush(frameIndex);
+
+                // render
+                beRenderer.beginSwapChainRenderPass(commandBuffer);
+                renderSystem.renderGameObjects(frameInfo, gameObjects);
+                beRenderer.endSwapChainRenderPass(commandBuffer);
+                beRenderer.endFrame();
+
+                // TODO:
                 // begin offscreen shadow pass
                 // render shadow casting objects
                 // end offscreen shadow pass
-
-                beRenderer.beginSwapChainRenderPass(commandBuffer);
-                renderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
-                beRenderer.endSwapChainRenderPass(commandBuffer);
-                beRenderer.endFrame();
             }
         }
 

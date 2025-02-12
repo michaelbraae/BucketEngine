@@ -16,11 +16,11 @@ namespace bucketengine
         vkDestroyPipelineLayout(beDevice.device(), pipelineLayout, nullptr);
     }
 
-    void BERenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<BEGameObject> &gameObjects, const BECamera& camera)
+    void BERenderSystem::renderGameObjects(FrameInfo &frameInfo, std::vector<BEGameObject> &gameObjects)
     {
-        bePipeline->bind(commandBuffer);
+        bePipeline->bind(frameInfo.commandBuffer);
 
-        auto projectionView = camera.getProjection() * camera.getView();
+        auto projectionView = frameInfo.camera.getProjection() * frameInfo.camera.getView();
 
         for (auto& obj: gameObjects)
         {
@@ -30,7 +30,7 @@ namespace bucketengine
             push.normalMatrix = obj.transform.normalMatrix();
 
             vkCmdPushConstants(
-                commandBuffer,
+                frameInfo.commandBuffer,
                 pipelineLayout,
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
                 0,
@@ -38,8 +38,8 @@ namespace bucketengine
                 &push
             );
 
-            obj.model->bind(commandBuffer);
-            obj.model->draw(commandBuffer);
+            obj.model->bind(frameInfo.commandBuffer);
+            obj.model->draw(frameInfo.commandBuffer);
         }
     }
     
