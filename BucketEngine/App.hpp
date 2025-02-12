@@ -5,6 +5,7 @@
 #include "BEDevice.hpp"
 #include "renderer/BERenderer.hpp"
 #include "BEModel.hpp"
+#include "descriptors/BEDescriptors.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -37,6 +38,8 @@ namespace bucketengine
         BEWindow beWindow{WIDTH, HEIGHT, "Bucket Engine"};
         BEDevice beDevice{beWindow};
         BERenderer beRenderer{beWindow, beDevice};
+
+        std::unique_ptr<BEDescriptorPool> globalPool{};
         
         std::vector<BEGameObject> gameObjects;
     };

@@ -25,14 +25,14 @@ namespace bucketengine
     // in device memory, we require the alignment to be explicit
     struct SimplePushConstantData
     {
-        glm::mat4 transform{1.f};
+        glm::mat4 modelMatrix{1.f};
         glm::mat4 normalMatrix{1.f};
     };
 
     class BERenderSystem
     {
     public:
-        BERenderSystem(BEDevice &device, VkRenderPass renderPass);
+        BERenderSystem(BEDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
         ~BERenderSystem();
 
         BERenderSystem(const BERenderSystem &) = delete;
@@ -40,7 +40,7 @@ namespace bucketengine
 
         void renderGameObjects(FrameInfo &frameInfo, std::vector<BEGameObject> &gameObjects);
     private:
-        void createPipelineLayout();
+        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void createPipeline(VkRenderPass renderPass);
 
         BEDevice &beDevice;

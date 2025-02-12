@@ -2,6 +2,7 @@
 
 #include "../camera/BECamera.hpp"
 
+// lib
 #include <vulkan/vulkan.h>
 
 namespace bucketengine
@@ -12,5 +13,6 @@ namespace bucketengine
         float frameTime;
         VkCommandBuffer commandBuffer;
         BECamera &camera;
-    };    
+        VkDescriptorSet globalDescriptorSet;
+    };
 }

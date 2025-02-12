@@ -9,6 +9,10 @@
 #include <array>
 #include <chrono>
 
+// TODO:
+// Homogeneous coordinates
+// descriptor sets
+
 namespace bucketengine
 {
     // global uniform buffer object
@@ -20,6 +24,11 @@ namespace bucketengine
     
     App::App()
     {
+        globalPool = BEDescriptorPool::Builder(beDevice)
+            .setMaxSets(BESwapChain::MAX_FRAMES_IN_FLIGHT)
+            .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, BESwapChain::MAX_FRAMES_IN_FLIGHT)
+            .build();
+        
         loadGameObjects();
     }
 
@@ -27,20 +36,34 @@ namespace bucketengine
 
     void App::run()
     {
-        BEBuffer globalUboBuffer{
-            beDevice,
-            sizeof(GlobalUbo),
-            BESwapChain::MAX_FRAMES_IN_FLIGHT,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-            beDevice.properties.limits.minUniformBufferOffsetAlignment
-        };
-        
-        // calling map on the buffer enables writing to it's memory
-        globalUboBuffer.map();
+        std::vector<std::unique_ptr<BEBuffer>> uboBuffers(BESwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < uboBuffers.size(); i++)
+        {
+            uboBuffers[i] = std::make_unique<BEBuffer>(
+                beDevice,
+                sizeof(GlobalUbo),
+                1,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+            );
+            uboBuffers[i]->map();
+        }
 
-        
-        BERenderSystem renderSystem{beDevice, beRenderer.getSwapChainRenderPass()};
+        // the highest set available to all shaders
+        auto globalSetLayout = BEDescriptorSetLayout::Builder(beDevice)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+            .build();
+
+        std::vector<VkDescriptorSet> globalDescriptorSets(BESwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < globalDescriptorSets.size(); i++)
+        {
+            auto bufferInfo = uboBuffers[i]->descriptorInfo();
+            BEDescriptorWriter(*globalSetLayout, *globalPool)
+                .writeBuffer(0, &bufferInfo)
+                .build(globalDescriptorSets[i]);
+        }
+
+        BERenderSystem renderSystem{beDevice, beRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
         BECamera camera{};
 
         auto viewerObject = BEGameObject::createGameObject();
@@ -76,14 +99,15 @@ namespace bucketengine
                     frameIndex,
                     frameTime,
                     commandBuffer,
-                    camera
+                    camera,
+                    globalDescriptorSets[frameIndex],
                 };
 
                 // update
                 GlobalUbo ubo{};
                 ubo.projectionView = camera.getProjection() * camera.getView();
-                globalUboBuffer.writeToIndex(&ubo, frameIndex);
-                globalUboBuffer.flush(frameIndex);
+                uboBuffers[frameIndex]->writeToBuffer(&ubo);
+                uboBuffers[frameIndex]->flush();
 
                 // render
                 beRenderer.beginSwapChainRenderPass(commandBuffer);
