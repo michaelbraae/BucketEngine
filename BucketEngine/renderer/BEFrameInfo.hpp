@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "../camera/BECamera.hpp"
+#include "../game/BEGameObject.hpp"
 
 // lib
 #include <vulkan/vulkan.h>
@@ -14,5 +15,6 @@ namespace bucketengine
         VkCommandBuffer commandBuffer;
         BECamera &camera;
         VkDescriptorSet globalDescriptorSet;
+        BEGameObject::Map &gameObjects;
     };
 }

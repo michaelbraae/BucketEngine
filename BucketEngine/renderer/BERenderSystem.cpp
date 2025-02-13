@@ -16,7 +16,7 @@ namespace bucketengine
         vkDestroyPipelineLayout(beDevice.device(), pipelineLayout, nullptr);
     }
 
-    void BERenderSystem::renderGameObjects(FrameInfo &frameInfo, std::vector<BEGameObject> &gameObjects)
+    void BERenderSystem::renderGameObjects(FrameInfo &frameInfo)
     {
         bePipeline->bind(frameInfo.commandBuffer);
 
@@ -30,9 +30,11 @@ namespace bucketengine
             0,
             nullptr
         );
-        
-        for (auto& obj: gameObjects)
+
+        for (auto& kv: frameInfo.gameObjects)
         {
+            auto& obj = kv.second;
+            if (obj.model == nullptr) continue;
             SimplePushConstantData push{};
             push.modelMatrix = obj.transform.mat4();
             push.normalMatrix = obj.transform.normalMatrix();

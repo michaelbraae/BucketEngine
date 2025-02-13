@@ -38,7 +38,7 @@ namespace bucketengine
         BERenderSystem(const BERenderSystem &) = delete;
         BERenderSystem &operator=(const BERenderSystem &) = delete;
 
-        void renderGameObjects(FrameInfo &frameInfo, std::vector<BEGameObject> &gameObjects);
+        void renderGameObjects(FrameInfo &frameInfo);
     private:
         void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void createPipeline(VkRenderPass renderPass);

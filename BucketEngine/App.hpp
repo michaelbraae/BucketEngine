@@ -41,7 +41,7 @@ namespace bucketengine
 
         std::unique_ptr<BEDescriptorPool> globalPool{};
         
-        std::vector<BEGameObject> gameObjects;
+        BEGameObject::Map gameObjects;
     };
     
 }

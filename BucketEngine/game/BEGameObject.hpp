@@ -7,6 +7,7 @@
 
 //std
 #include <memory>
+#include <unordered_map>
 
 namespace bucketengine
 {
@@ -28,6 +29,7 @@ namespace bucketengine
     {
     public:
         using id_t = unsigned int;
+        using Map = std::unordered_map<id_t, BEGameObject>;
 
         static BEGameObject createGameObject();
 

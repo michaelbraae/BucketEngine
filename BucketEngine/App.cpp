@@ -19,7 +19,9 @@ namespace bucketengine
     struct GlobalUbo
     {
         glm::mat4 projectionView{1.f};
-        glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+        glm::vec4 ambientLightColor{1.f, 1.f, 1.f, 0.02f};
+        glm::vec3 lightPosition{-1.f};
+        alignas(16) glm::vec4 lightColor{1.f}; // w is light intensity
     };
     
     App::App()
@@ -51,7 +53,7 @@ namespace bucketengine
 
         // the highest set available to all shaders
         auto globalSetLayout = BEDescriptorSetLayout::Builder(beDevice)
-            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
             .build();
 
         std::vector<VkDescriptorSet> globalDescriptorSets(BESwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -90,7 +92,7 @@ namespace bucketengine
             // get the aspect ratio directly from the renderer, so as we resize the viewport
             // our render remains correctly drawn
             float aspect = beRenderer.getAspectRatio();
-            camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 10.f);
+            camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 100.f);
 
             if (auto commandBuffer = beRenderer.beginFrame())
             {
@@ -101,6 +103,7 @@ namespace bucketengine
                     commandBuffer,
                     camera,
                     globalDescriptorSets[frameIndex],
+                    gameObjects
                 };
 
                 // update
@@ -111,7 +114,7 @@ namespace bucketengine
 
                 // render
                 beRenderer.beginSwapChainRenderPass(commandBuffer);
-                renderSystem.renderGameObjects(frameInfo, gameObjects);
+                renderSystem.renderGameObjects(frameInfo);
                 beRenderer.endSwapChainRenderPass(commandBuffer);
                 beRenderer.endFrame();
 
@@ -131,9 +134,19 @@ namespace bucketengine
 
         auto cube = BEGameObject::createGameObject();
         cube.model = beModel;
-        cube.transform.translation = {.0f, .2f, .5f};
-        cube.transform.scale = {1.f, 1.f, 1.f};
+        cube.transform.translation = {0.f, .5f, 2.f};
+        cube.transform.scale = {3.f, 3.f, 3.f};
 
-        gameObjects.push_back(std::move(cube));
+        gameObjects.emplace(cube.getId(), std::move(cube));
+
+        // create a quad to represent the floor
+        std::shared_ptr<BEModel> floorModel = BEModel::createModelFromFile(beDevice, "models/quad.obj");
+        
+        auto floor = BEGameObject::createGameObject();
+        floor.model = floorModel;
+        floor.transform.translation = {.0f, .5f, .0f};
+        floor.transform.scale = {3.f, 1.f, 3.f};
+
+        gameObjects.emplace(floor.getId(), std::move(floor));
     }
 }
