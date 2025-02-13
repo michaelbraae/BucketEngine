@@ -1,6 +1,6 @@
 ﻿#include "App.hpp"
 
-#include "renderer/BERenderSystem.hpp"
+#include "renderer/systems/BERenderSystem.hpp"
 #include "camera/BECamera.hpp"
 #include "input/BEKeyboardMovementController.hpp"
 #include "buffers/BEBuffer.hpp"
@@ -18,7 +18,8 @@ namespace bucketengine
     // global uniform buffer object
     struct GlobalUbo
     {
-        glm::mat4 projectionView{1.f};
+        glm::mat4 projection{1.f};
+        glm::mat4 view{1.f};
         glm::vec4 ambientLightColor{1.f, 1.f, 1.f, 0.02f};
         glm::vec3 lightPosition{-1.f};
         alignas(16) glm::vec4 lightColor{1.f}; // w is light intensity
@@ -108,7 +109,8 @@ namespace bucketengine
 
                 // update
                 GlobalUbo ubo{};
-                ubo.projectionView = camera.getProjection() * camera.getView();
+                ubo.projection = camera.getProjection();
+                ubo.view = camera.getView();
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameIndex]->flush();
 

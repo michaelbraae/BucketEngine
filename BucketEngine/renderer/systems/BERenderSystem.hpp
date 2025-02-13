@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "../BEWindow.hpp"
-#include "../BEPipeline.hpp"
-#include "../game/BEGameObject.hpp"
-#include "../BEDevice.hpp"
-#include "../camera/BECamera.hpp"
-#include "BEFrameInfo.hpp"
+#include "../../BEWindow.hpp"
+#include "../../BEPipeline.hpp"
+#include "../../game/BEGameObject.hpp"
+#include "../../BEDevice.hpp"
+#include "../../camera/BECamera.hpp"
+#include "../BEFrameInfo.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS

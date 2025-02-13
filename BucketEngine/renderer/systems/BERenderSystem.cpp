@@ -52,7 +52,7 @@ namespace bucketengine
             obj.model->draw(frameInfo.commandBuffer);
         }
     }
-    
+
     void BERenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
     {
         VkPushConstantRange pushConstantRange{};
