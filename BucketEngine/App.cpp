@@ -1,6 +1,7 @@
 ﻿#include "App.hpp"
 
 #include "renderer/systems/BERenderSystem.hpp"
+#include "renderer/systems/BEPointLightSystem.hpp"
 #include "camera/BECamera.hpp"
 #include "input/BEKeyboardMovementController.hpp"
 #include "buffers/BEBuffer.hpp"
@@ -66,7 +67,20 @@ namespace bucketengine
                 .build(globalDescriptorSets[i]);
         }
 
-        BERenderSystem renderSystem{beDevice, beRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+        // initialise the render system
+        BERenderSystem renderSystem{
+            beDevice,
+            beRenderer.getSwapChainRenderPass(),
+            globalSetLayout->getDescriptorSetLayout()
+        };
+
+        // initialise the point light render system
+        BEPointLightSystem pointLightRenderSystem{
+            beDevice,
+            beRenderer.getSwapChainRenderPass(),
+            globalSetLayout->getDescriptorSetLayout()
+        };
+
         BECamera camera{};
 
         auto viewerObject = BEGameObject::createGameObject();
@@ -117,6 +131,7 @@ namespace bucketengine
                 // render
                 beRenderer.beginSwapChainRenderPass(commandBuffer);
                 renderSystem.renderGameObjects(frameInfo);
+                pointLightRenderSystem.render(frameInfo);
                 beRenderer.endSwapChainRenderPass(commandBuffer);
                 beRenderer.endFrame();
 
