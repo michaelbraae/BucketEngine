@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+// #include "../input/BEMouseInputHandler.hpp"
+
 // libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -12,6 +14,7 @@ namespace bucketengine
     private:
         glm::mat4 projectionMatrix{1.f};
         glm::mat4 viewMatrix{1.f};
+
     public:
         void setOrthographicProjection(
             float left, float right, float top, float bottom, float near, float far

@@ -10,6 +10,8 @@
 #include <array>
 #include <chrono>
 
+#include "input/BEMouseInputHandler.hpp"
+
 // TODO:
 // Homogeneous coordinates
 // descriptor sets
@@ -85,6 +87,8 @@ namespace bucketengine
 
         auto viewerObject = BEGameObject::createGameObject();
         BEKeyboardMovementController cameraController{};
+
+        EditorInput::BEMouseInputHandler mouseInputHandler{beWindow, camera, viewerObject, gameObjects};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
 
